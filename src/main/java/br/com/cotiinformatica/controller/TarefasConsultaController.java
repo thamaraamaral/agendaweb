@@ -54,7 +54,7 @@ public class TarefasConsultaController {
 				modelAndView.addObject("mensagem", lista.size() + " tarefa(s) encontrada(s) para o período especificado.");
 			}
 			else {
-				modelAndView.addObject("mensagem", " Nenhuma tarefa foi encontrada para o período especificado.");
+				modelAndView.addObject("mensagem", "Nenhuma tarefa foi encontrada para o período especificado.");
 			}
 		}
 		catch(Exception e) {
@@ -65,5 +65,35 @@ public class TarefasConsultaController {
 		modelAndView.addObject("model", model);		
 		return modelAndView;
 	}
+		
+	@RequestMapping(value = "/tarefas-exclusao")
+	public ModelAndView excluirTarefa(Integer id, HttpServletRequest request) {
+		
+		ModelAndView modelAndView = new ModelAndView("tarefas-consulta");
+		
+		try {
+			
+			//capturar o usuário autenticado (sessão)
+			Usuario usuario = (Usuario) request.getSession().getAttribute("usuario_auth");
+			
+			Tarefa tarefa = new Tarefa();
+			tarefa.setIdTarefa(id);
+			tarefa.setUsuario(usuario);
+			
+			//excluindo a tarefa
+			TarefaRepository tarefaRepository = new TarefaRepository();
+			tarefaRepository.delete(tarefa);
+			
+			modelAndView.addObject("mensagem", "Tarefa excluída com sucesso.");
+		}
+		catch(Exception e) {
+			//gerando uma mensagem de erro
+			modelAndView.addObject("mensagem", "Ocorreu um erro: " + e.getMessage());
+		}
+		
+		modelAndView.addObject("model", new TarefaConsultaModel());
+		return modelAndView;
+	}
 	
 }
+
